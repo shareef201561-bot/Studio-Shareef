@@ -24,14 +24,9 @@ summary{font-weight:700;cursor:pointer}label{font-size:14px}small{color:var(--mu
 .lk{display:flex;gap:6px;margin-top:6px;align-items:center}.lk input{direction:ltr;font-size:12px}.lk button,.lk a{flex:0 0 auto;padding:9px 11px;border-radius:10px;border:1px solid var(--bd);color:var(--tx);text-decoration:none;font-size:14px}
 .cm{border:1px solid var(--bd);border-radius:10px;padding:8px;margin-top:8px;display:flex;gap:8px;flex-wrap:wrap;align-items:center}.cm .th{flex:0 0 90px;cursor:pointer}.cm .lk{margin:0;flex:1 1 150px;flex-wrap:wrap}.cm .lk input.nm{direction:rtl;font-size:14px;min-width:90px}.nt{font-size:12px;white-space:nowrap}
 .warn{background:#fef3c7;color:#78350f;border-radius:10px;padding:8px;margin-bottom:8px;font-size:13px}
-#strip{display:flex;gap:6px;overflow-x:auto;margin-bottom:8px;padding:2px;min-height:30px;align-items:center}
-.tl{flex:0 0 112px;position:relative;border:3px solid transparent;border-radius:10px;background:#000;cursor:pointer;overflow:hidden}
-.tl.on{border-color:#22d3ee;box-shadow:0 0 0 2px #22d3ee66}
-.tl video{width:100%;aspect-ratio:16/9;object-fit:cover;display:block}
-.tl b{position:absolute;bottom:0;left:0;right:0;background:#000a;color:#fff;font-size:11px;padding:1px 4px;text-align:center;white-space:nowrap;overflow:hidden}
-.tl i{position:absolute;top:2px;right:3px;font-style:normal;font-size:11px}
-.tl u{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#f87171;font-size:11px;text-decoration:none;background:#000c}
-.dg{font-size:12px;color:var(--mu);width:100%}.er{background:#fee2e2;color:#991b1b;border-radius:10px;padding:8px;font-size:13px;width:100%;display:flex;gap:8px;align-items:center;justify-content:space-between}.er button{flex:0 0 auto}
+#strip{display:flex;gap:6px;margin-bottom:8px;overflow-x:auto}.sc{flex:1 1 0;min-width:92px;text-align:center;font-size:12px;cursor:pointer;user-select:none}.sc canvas{width:100%;aspect-ratio:16/9;background:#000;border:3px solid var(--bd);border-radius:8px;display:block}.sc.on canvas{border-color:#22c55e;box-shadow:0 0 0 2px #22c55e}
+.bx{flex:1;text-align:center}.bx canvas{width:100%;aspect-ratio:16/9;background:#000;border-radius:10px;display:block;pointer-events:none;user-select:none;margin-bottom:6px}.bx button{width:100%}
+#pool{position:fixed;left:0;bottom:0;width:2px;height:2px;overflow:hidden;opacity:.01;pointer-events:none}
 </style>
 </head>
 <body>
@@ -42,12 +37,10 @@ summary{font-weight:700;cursor:pointer}label{font-size:14px}small{color:var(--mu
 <div class="cd" style="margin:0 0 10px">
 <div class="row" style="margin:0"><input id="pw" placeholder="كلمة سر الغرفة (تتولد تلقائياً)" inputmode="numeric"><button class="p" id="mk">＋ إنشاء غرفة</button></div>
 <div id="links" hidden></div>
-<details style="margin-top:8px"><summary>🌐 إعدادات TURN (لو الكاميرا ما وصلت بين شبكتين)</summary>
-<div class="row"><input id="tu" placeholder="turns:YOUR-HOST:443?transport=tcp"><input id="tn" placeholder="username"><input id="tc" placeholder="credential"></div>
-<small>خدمة TURN مجانية: سجّل في metered.ca وانسخ البيانات هنا قبل إنشاء الغرفة. تنتقل تلقائياً داخل روابط الدعوة.</small></details>
 </div>
-<div id="strip"><small id="sn">📷 شريط الكاميرات: أضف كاميرا من الأسفل وتظهر هنا مصغرة، اضغط على أي صورة لتصير الشاشة الرئيسية.</small></div>
+<div id="strip" hidden></div><div id="alert" class="warn" style="background:#fee2e2;color:#991b1b" hidden></div>
 <div class="w"><canvas id="cv" width="1280" height="720"></canvas><div id="hl" hidden></div></div>
+<div class="row" id="boxes"><div class="bx"><small>📱 كاميرتي</small><canvas id="bx1" width="320" height="180"></canvas><button id="bx1b">تشغيل كاميرتي</button></div><div class="bx"><small>👤 كاميرا الضيف</small><canvas id="bx2" width="320" height="180"></canvas><button id="bx2b">＋ دعوة ضيف</button></div></div><div id="pool"></div>
 <div class="row"><button id="rc">⏺ تسجيل</button><button id="mu">🎙 كتم الكل</button><button id="end">⏹ إنهاء البث</button></div>
 <div class="row"><button id="mv" class="on">✋ تحريك العناصر: تشغيل</button><button id="rf">↺ إعادة تعيين الإطارات</button><button id="shot">📷 لقطة</button></div>
 <div class="row"><button id="wk">📶 وضع الشبكة الضعيفة: إيقاف</button></div>
@@ -89,7 +82,7 @@ summary{font-weight:700;cursor:pointer}label{font-size:14px}small{color:var(--mu
 <h1>📷 كاميرا الغرفة</h1>
 <div class="warn" id="https2" hidden>⚠️ افتح الرابط عبر https وإلا ما تشتغل الكاميرا.</div>
 <video id="cv2" class="big" muted playsinline autoplay></video>
-<div class="row"><button class="p" id="cgo">تشغيل الكاميرا والاتصال</button><button id="csw">🔄 أمامية/خلفية</button></div>
+<div class="row"><button class="p" id="cgo">تشغيل الكاميرا والاتصال</button><button id="csw">🔄 أمامية/خلفية</button><button id="crj">♻️ إعادة الاتصال</button></div>
 <p id="cs">اضغط الزر وسمح للكاميرا والميكروفون. أمسك التلفون بالعرض.</p>
 <small id="cq"></small>
 </div>
@@ -108,38 +101,35 @@ const M=H.get('cam')?'camv':H.get('watch')?'view':'studio';
 ['studio','camv','view'].forEach(x=>$('#'+x).hidden=x!=M);
 window.onhashchange=()=>location.reload();
 const noP=()=>typeof Peer=='undefined';
-const CFG={config:{iceServers:[{urls:'stun:stun.l.google.com:19302'},{urls:'stun:global.stun.twilio.com:3478'},{urls:['turn:openrelay.metered.ca:80','turn:openrelay.metered.ca:443','turns:openrelay.metered.ca:443?transport=tcp'],username:'openrelayproject',credential:'openrelayproject'}]}};
-try{const tr=H.get('turn');if(tr)CFG.config.iceServers.unshift(JSON.parse(atob(tr)))}catch(e){}
+const MY_TURN=null; /* اختياري: {urls:['turn:...','turns:...'],username:'..',credential:'..'} */
+const CFG={config:{iceCandidatePoolSize:4,iceServers:[{urls:['stun:stun.l.google.com:19302','stun:stun1.l.google.com:19302','stun:stun.cloudflare.com:3478','stun:global.stun.twilio.com:3478']},{urls:'turn:freestun.net:3478',username:'free',credential:'free'},{urls:['turn:openrelay.metered.ca:80','turn:openrelay.metered.ca:443','turns:openrelay.metered.ca:443?transport=tcp'],username:'openrelayproject',credential:'openrelayproject'},...(MY_TURN?[MY_TURN]:[])]}};
 const esc=s=>String(s).replace(/[&<>"]/g,c=>'&#'+c.charCodeAt(0)+';');
 if(!window.isSecureContext){$('#https').hidden=$('#https2').hidden=false}
 
 /* ============ صفحة كاميرا الضيف ============ */
 if(M=='camv'){
 const room=H.get('cam'),id=H.get('id')||'',pw=H.get('pw')||'';
-let st,fm='user',call,peer,conn,lvl=0,forced=false,bad=0,good=0,stop=false,rt=0,ok=false,wd=0;
+let st,fm='user',call,peer,conn,lvl=0,forced=false,bad=0,good=0,stop=false,rt=0;
 const say=m=>$('#cs').textContent=m,LV=[{b:8e5,s:1},{b:3e5,s:1.5},{b:1e5,s:2.5}],QN=['جودة جيدة 480p','جودة متوسطة 240p','جودة ضعيفة 144p','صوت فقط (الشبكة ضعيفة)'];
 async function apply(l){lvl=l;$('#cq').textContent=QN[l]+(forced?' - وضع الشبكة الضعيفة':'');if(!st)return;const vt=st.getVideoTracks()[0];if(l>=3){vt&&(vt.enabled=false);return}vt&&(vt.enabled=true);
 const s=call&&call.peerConnection&&call.peerConnection.getSenders().find(x=>x.track&&x.track.kind=='video');if(!s)return;
 const p=s.getParameters();if(!p.encodings||!p.encodings.length)p.encodings=[{}];p.encodings[0].maxBitrate=LV[l].b;p.encodings[0].scaleResolutionDownBy=LV[l].s;try{await s.setParameters(p)}catch(e){}}
 function onD(d){
-if(d.ok){ok=true;clearTimeout(wd);say('✅ متصل باسم: '+d.name+' - جاري إرسال الصورة...');const p=peer;call=p.call('st-'+room,st);call.on('close',()=>{if(p===peer&&!stop)retry()});const pc=call.peerConnection;
-if(pc)pc.oniceconnectionstatechange=()=>{const x=pc.iceConnectionState;if(p!==peer)return;if(x=='failed')retry();else if(x=='disconnected')setTimeout(()=>{if(p===peer&&!['connected','completed'].includes(pc.iceConnectionState))retry()},6000)};
-setTimeout(()=>{forced=!!d.force;apply(forced?2:lvl)},1500)}
+if(d.ok){say('✅ متصل باسم: '+d.name);call=peer.call('st-'+room,st);setTimeout(()=>{forced=!!d.force;apply(forced?2:lvl)},1500)}
 else if(d.e){stop=true;say(d.e==1?'❌ كلمة السر غير صحيحة':d.e==3?'❌ رابط الكاميرا غير صالح أو تم حذف الكاميرا':'❌ تعذر الدخول')}
 else if(d.kick){stop=true;say('تم إنهاء الاتصال من الإدارة')}
 else if(d.end){stop=true;say('انتهى البث')}
-else if(d.reco){join()}
+else if(d.rejoin){retry()}
 else if('force' in d){forced=!!d.force;apply(forced?2:0)}
 else if(d.name)say('✅ اسمك الآن: '+d.name)}
-function join(){if(stop)return;const o=peer;peer=null;try{o&&o.destroy()}catch(e){}ok=false;
-const p=peer=new Peer(undefined,CFG);
-p.on('open',()=>{conn=p.connect('st-'+room,{metadata:{r:'cam',pw,id},reliable:true});conn.on('data',onD);conn.on('close',()=>{if(p===peer)retry()});conn.on('error',()=>{if(p===peer)retry()});
-clearTimeout(wd);wd=setTimeout(()=>{if(!ok&&p===peer){say('⏳ الاتصال بطيء، إعادة محاولة... (لو تكرر: الشبكة تحتاج TURN)');retry()}},12000)});
-p.on('error',e=>{if(p!==peer)return;if(e.type=='peer-unavailable'){say('الغرفة غير موجودة أو لم تبدأ بعد، سأعاود المحاولة...');retry()}else if(p.disconnected){try{p.reconnect()}catch(x){}}else say('مشكلة اتصال ('+e.type+')')});
-p.on('disconnected',()=>{try{p.reconnect()}catch(e){}})}
+function join(){if(stop)return;try{peer&&peer.destroy()}catch(e){}
+peer=new Peer(undefined,CFG);
+peer.on('open',()=>{conn=peer.connect('st-'+room,{metadata:{r:'cam',pw,id}});conn.on('data',onD);conn.on('close',retry);conn.on('error',retry)});
+peer.on('error',e=>{if(['network','server-error','socket-error','socket-closed'].includes(e.type)){try{peer.reconnect()}catch(x){}return}say(e.type=='peer-unavailable'?'الغرفة غير موجودة أو لم تبدأ بعد، سأعاود المحاولة...':'مشكلة اتصال ('+e.type+')');retry()});
+peer.on('disconnected',()=>{try{peer.reconnect()}catch(x){}})}
 function retry(){if(stop)return;clearTimeout(rt);say('🔄 انقطع الاتصال، جاري إعادة الاتصال تلقائياً...');rt=setTimeout(join,3000)}
 addEventListener('online',()=>{if(st)retry()});
-setInterval(async()=>{if(!call||!call.peerConnection||!conn||!conn.open)return;let loss=0,rtt=0;
+setInterval(async()=>{if(!call||!call.peerConnection||!conn||!conn.open)return;if(call.peerConnection.iceConnectionState=='failed'){retry();return}let loss=0,rtt=0;
 try{(await call.peerConnection.getStats()).forEach(r=>{if(r.type=='remote-inbound-rtp'){loss=Math.max(loss,r.fractionLost||0);rtt=Math.max(rtt,r.roundTripTime||0)}})}catch(e){}
 if(!forced){bad=(loss>.08||rtt>1)?bad+1:0;good=(loss<.02&&rtt<.4)?good+1:0;
 if(bad>=2&&lvl<3){apply(lvl+1);bad=0}else if(good>=5&&lvl>0){apply(lvl-1);good=0}}
@@ -154,6 +144,7 @@ $('#csw').onclick=async()=>{if(!st)return;fm=fm=='user'?'environment':'user';
 try{const n=await navigator.mediaDevices.getUserMedia({video:{facingMode:fm,width:{ideal:640},height:{ideal:360}}}),tr=n.getVideoTracks()[0];
 st.getVideoTracks().forEach(t=>t.stop());st=new MediaStream([tr,...st.getAudioTracks()]);$('#cv2').srcObject=st;
 const s=call&&call.peerConnection.getSenders().find(s=>s.track&&s.track.kind=='video');s&&s.replaceTrack(tr);apply(lvl)}catch(e){say('تعذر تبديل الكاميرا')}}
+$('#crj').onclick=()=>{if(!st)return $('#cgo').click();stop=false;join()};
 }
 
 /* ============ صفحة المشاهد / الخام ============ */
@@ -161,12 +152,12 @@ if(M=='view'){
 const v=$('#vv'),raw=H.get('raw')=='1';let peer,stop=false,rt=0;
 if(raw){document.body.style.cssText='margin:0;padding:0;background:#000;max-width:none';document.querySelector('#view h1').hidden=document.querySelector('#view .row').hidden=$('#vt').hidden=true;v.controls=false;v.style.borderRadius=0;v.style.height='100vh';v.style.objectFit='contain'}
 const say=m=>$('#vt').textContent=m;
-function join(){if(stop)return;const o=peer;peer=null;try{o&&o.destroy()}catch(e){}
-const p=peer=new Peer(undefined,CFG);
-p.on('open',()=>{const c=p.connect('st-'+H.get('watch'),{metadata:{r:'view',raw}});
-c.on('data',d=>{if(d.end){stop=true;say('انتهى البث، شكراً للمشاهدة')}});c.on('close',()=>{if(p===peer)retry()})});
-p.on('call',c=>{c.answer();c.on('stream',s=>{v.srcObject=s;if(raw)v.muted=false;v.play().catch(()=>{v.muted=true;v.play()});say('🔴 مباشر الآن')})});
-p.on('error',e=>{if(p===peer&&e.type=='peer-unavailable')retry()});p.on('disconnected',()=>{try{p.reconnect()}catch(x){}})}
+function join(){if(stop)return;try{peer&&peer.destroy()}catch(e){}
+peer=new Peer(undefined,CFG);
+peer.on('open',()=>{const c=peer.connect('st-'+H.get('watch'),{metadata:{r:'view',raw}});
+c.on('data',d=>{if(d.end){stop=true;say('انتهى البث، شكراً للمشاهدة')}});c.on('close',retry)});
+peer.on('call',c=>{c.answer();c.on('stream',s=>{v.srcObject=s;if(raw)v.muted=false;v.play().catch(()=>{v.muted=true;v.play()});say('🔴 مباشر الآن')})});
+peer.on('error',e=>{if(['network','server-error','socket-error','socket-closed'].includes(e.type)){try{peer.reconnect()}catch(x){}}else retry()});peer.on('disconnected',()=>{try{peer.reconnect()}catch(x){}})}
 function retry(){if(stop)return;clearTimeout(rt);say('🔄 جاري إعادة الاتصال بالبث...');rt=setTimeout(join,3000)}
 if(noP())say('تحتاج إنترنت');else join();
 addEventListener('online',retry);
@@ -214,13 +205,16 @@ else if(z==3){rr(-210,-26,420,52,26,'#000b');t(A,-125,1,F(22),'#fff');t(B,125,1,
 else{rr(-300,-50,270,100,20,S.c1);rr(30,-50,270,100,20,S.c2);t(A,-165,-28,F(24),'#fff');t(B,165,-28,F(24),'#fff');t(x,-165,16,F(60),'#fff');t(y,165,16,F(60),'#fff');if(T){rr(-28,-16,56,32,10,'#000b');t(T,0,0,F(16),'#fff')}}}
 const fmt=s=>String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');
 const main=()=>{if(src=='img'||src=='vid'||src=='scr')return ext;if(src[0]=='c'){const c=cams.find(x=>x.id==src.slice(2));return c&&c.v}return null};
+const bxs=[$('#bx1').getContext('2d'),$('#bx2').getContext('2d')];
+function drawCams(){cams.forEach(cm=>{if(cm.tc){cm.tc.fillStyle='#000';cm.tc.fillRect(0,0,160,90);cover(cm.tc,cm.v,0,0,160,90);cm.sc.classList.toggle('on',src=='c:'+cm.id)}});
+[cams.find(c=>c.local),cams.find(c=>!c.local)].forEach((cm,i)=>{const g=bxs[i];g.fillStyle='#000';g.fillRect(0,0,320,180);if(cm)cover(g,cm.v,0,0,320,180)})}
 function draw(){
 cx.fillStyle='#000';cx.fillRect(0,0,1280,720);if(bgc)cx.drawImage(bgc,0,0);
 const m=main();if(m){if(K.on)key(m);else cover(cx,m,0,0,1280,720)}
 rx.fillStyle='#000';rx.fillRect(0,0,1280,720);if(m)cover(rx,m,0,0,1280,720);
 for(const k in IT)IT[k].b=null;
 cx.textBaseline='middle';cx.direction='rtl';const sh=S.show;
-cams.forEach(cm=>{if(cm.show)item(cm.k,320,180,()=>{cx.save();cx.beginPath();cx.roundRect(-160,-90,320,180,12);cx.clip();cx.fillStyle='#111';cx.fillRect(-160,-90,320,180);cover(cx,cm.v,-160,-90,320,180);rr(-160,62,320,28,0,'#000a');t(cm.name,0,77,F(18),'#fff');cx.restore()})});
+drawCams();
 if(sh.clock)item('clock',190,56,()=>{rr(-95,-28,190,56,12,'#000a');cx.direction='ltr';t(new Date().toLocaleTimeString('ar-u-nu-latn',{hour12:true}),0,2,F(26),'#fff');cx.direction='rtl'});
 if(sh.score)item('score',620,100,score);
 if(sh.logo)item('logo',150,56,()=>{const g=S.logo;if(g){const r=Math.min(150/g.width,56/g.height);cx.drawImage(g,-g.width*r/2,-g.height*r/2,g.width*r,g.height*r)}else{rr(-75,-28,150,56,12,'#000a');t(S.logoT,0,2,F(24),'#fff')}});
@@ -247,7 +241,7 @@ $('#mv').onclick=e=>{mv=!mv;cv.style.touchAction=mv?'none':'auto';e.target.class
 /* المصدر الرئيسي */
 function fillSrc(){const s=$('#src');s.innerHTML='<option value="blk">شاشة سوداء / لا شيء</option>'+cams.map(c=>'<option value="c:'+c.id+'">'+esc(c.name)+'</option>').join('')+'<option value="img">صورة...</option><option value="vid">فيديو مسجل...</option><option value="scr">شاشة / مشاركة شاشة</option>';s.value=src}
 const syncAudio=()=>cams.forEach(c=>c.g.gain.value=src=='c:'+c.id?1:0);
-function setSrc(v){src=v;fillSrc();syncAudio();cams.forEach(c=>c.tl&&c.tl.classList.toggle('on','c:'+c.id==v))}
+function setSrc(v){src=v;fillSrc();syncAudio()}
 $('#src').onchange=async e=>{const v=e.target.value;
 if(v=='img'||v=='vid'){$('#fi').accept=v=='img'?'image/*':'video/*';$('#fi').dataset.k=v;e.target.value=src;$('#fi').click();return}
 if(v=='scr'){try{const s=await navigator.mediaDevices.getDisplayMedia({video:true,audio:true}),el=mkv();el.srcObject=s;el.play();ext=el;if(s.getAudioTracks().length)ac.createMediaStreamSource(s).connect(gain);s.getVideoTracks()[0].onended=()=>setSrc('blk')}catch(x){e.target.value=src;return}}
@@ -262,39 +256,28 @@ $('#kc').oninput=e=>{const h=e.target.value;K.c=[1,3,5].map(i=>parseInt(h.slice(
 /* الكاميرات */
 async function addCam(local){
 if(!local){await ensureRoom();if(!peer)return}
-const id=Math.random().toString(36).slice(2,7),n=cams.length+1,cm={id,name:(local?'كاميرا الجهاز ':'ضيف ')+n,local,v:mkv(),g:ac.createGain(),lvl:0,loss:0,ts:0,show:false,k:'k'+id,fm:'user'};
-cm.g.connect(gain);cm.g.gain.value=0;cams.push(cm);
-const tl=document.createElement('div');tl.className='tl';tl.innerHTML='<i>⚪</i><b></b><u>لا صورة</u>';tl.insertBefore(cm.v,tl.firstChild);
-cm.tl=tl;cm.dot=tl.querySelector('i');cm.lb=tl.querySelector('b');cm.nov=tl.querySelector('u');cm.lb.textContent=cm.name;tl.onclick=()=>setSrc('c:'+id);$('#strip').append(tl);$('#sn').hidden=true;
-IT[cm.k]={n:cm.name,x:200+70*(n%4),y:130+50*(n%4),s:1};D[cm.k]={...IT[cm.k]};
+const id=Math.random().toString(36).slice(2,7),n=cams.length+1,cm={id,name:(local?'كاميرتي ':'ضيف ')+n,local,v:mkv(),g:ac.createGain(),lvl:0,loss:0,ts:0,show:false,k:'k'+id,fm:'user'};
+cm.g.connect(gain);cm.g.gain.value=0;cams.push(cm);$('#pool').append(cm.v);
+
 if(local)startLocal(cm);
 render();fillSrc();chips();if(src=='blk')setSrc('c:'+id)}
 async function startLocal(cm){try{if(cm.v.srcObject)cm.v.srcObject.getTracks().forEach(t=>t.stop());cm.v.srcObject=await navigator.mediaDevices.getUserMedia({video:{facingMode:cm.fm,width:{ideal:1280},height:{ideal:720}}})}catch(e){say(e.name=='NotAllowedError'?'❌ اسمح للمتصفح باستخدام الكاميرا':'تعذر تشغيل الكاميرا: '+e.name)}}
-const link=cm=>location.href.split('#')[0]+'#cam='+room+'&id='+cm.id+'&pw='+encodeURIComponent(S.pw)+(S.turn||'');
+const link=cm=>location.href.split('#')[0]+'#cam='+room+'&id='+cm.id+'&pw='+encodeURIComponent(S.pw);
+function buildStrip(){const sp=$('#strip');sp.innerHTML='';cams.forEach(cm=>{const d=document.createElement('div');d.className='sc';d.innerHTML='<canvas width="160" height="90"></canvas><span></span>';d.querySelector('span').textContent=cm.name;cm.tc=d.querySelector('canvas').getContext('2d');cm.sc=d;d.onclick=()=>setSrc('c:'+cm.id);sp.append(d)});sp.hidden=!cams.length}
+function rejoin(cm){if(!cm)return;try{cm.conn&&cm.conn.send({rejoin:1})}catch(e){}const c=cm.conn;setTimeout(()=>{try{c&&c.close()}catch(e){}},400);try{cm.call&&cm.call.close()}catch(e){}cm.c0=Date.now();cm.vb=0;cm.pt=0;say('جاري إعادة الاتصال بـ '+cm.name)}
 function render(){const L=$('#cl');L.innerHTML='';cams.forEach(cm=>{const d=document.createElement('div');d.className='cm';
-d.innerHTML='<div class="lk"><input class="nm"><span class="nt"></span><label><input type="checkbox" class="sh"> طبقة</label><button class="lc">📋 رابط الدعوة</button><button class="rn">🔄</button><button class="dl">🗑</button></div><div class="dg"></div><div class="er" hidden><span>❌ الكاميرا لم تصل - اضغط إعادة الاتصال</span><button class="rc2 p">🔁 إعادة الاتصال</button></div>';
-cm.dg=d.querySelector('.dg');cm.er=d.querySelector('.er');d.querySelector('.rc2').onclick=()=>reco(cm);
-const nm=d.querySelector('.nm');nm.value=cm.name;nm.oninput=()=>{cm.name=nm.value;cm.lb.textContent=cm.name;IT[cm.k].n=cm.name;chips();fillSrc();try{cm.conn&&cm.conn.send({name:cm.name})}catch(e){}};
-const sh=d.querySelector('.sh');sh.checked=cm.show;sh.onchange=()=>cm.show=sh.checked;
-const lc=d.querySelector('.lc'),rn=d.querySelector('.rn');lc.hidden=cm.local;rn.hidden=!cm.local;
+d.innerHTML='<div class="lk"><input class="nm"><span class="nt"></span><button class="lc">📋 رابط</button><button class="rj">♻️ إعادة اتصال</button><button class="rn">🔄</button><button class="dl">🗑</button></div><small class="df" style="width:100%"></small>';
+const nm=d.querySelector('.nm');nm.value=cm.name;nm.oninput=()=>{cm.name=nm.value;buildStrip();fillSrc();try{cm.conn&&cm.conn.send({name:cm.name})}catch(e){}};
+const lc=d.querySelector('.lc'),rn=d.querySelector('.rn'),rj=d.querySelector('.rj');lc.hidden=rj.hidden=cm.local;rn.hidden=!cm.local;
 lc.onclick=()=>navigator.clipboard.writeText(link(cm)).then(()=>{lc.textContent='تم ✓';say('أرسل الرابط للضيف: '+link(cm))}).catch(()=>say(link(cm)));
-rn.onclick=()=>{cm.fm=cm.fm=='user'?'environment':'user';startLocal(cm)};
-d.querySelector('.dl').onclick=()=>del(cm);cm.nt=d.querySelector('.nt');L.append(d)})}
+rj.onclick=()=>rejoin(cm);rn.onclick=()=>{cm.fm=cm.fm=='user'?'environment':'user';startLocal(cm)};
+d.querySelector('.dl').onclick=()=>del(cm);cm.nt=d.querySelector('.nt');cm.df=d.querySelector('.df');L.append(d)});
+buildStrip();const a=cams.find(c=>c.local),b=cams.find(c=>!c.local);$('#bx1b').textContent=a?'🔄 تبديل كاميرتي':'تشغيل كاميرتي';$('#bx2b').textContent=b?'📋 نسخ رابط الضيف':'＋ دعوة ضيف'}
 function del(cm){try{if(cm.conn){cm.conn.send({kick:1});const c=cm.conn;setTimeout(()=>c.close(),300)}}catch(e){}
-if(cm.v.srcObject)cm.v.srcObject.getTracks().forEach(t=>t.stop());cm.an&&cm.an.disconnect();cm.g.disconnect();
-cm.tl&&cm.tl.remove();cams.splice(cams.indexOf(cm),1);delete IT[cm.k];delete D[cm.k];delete byPid[cm.pid];if(!cams.length)$('#sn').hidden=false;if(src=='c:'+cm.id)src='blk';if(sel==cm.k)sel='score';render();fillSrc();chips();syncAudio()}
+if(cm.v.srcObject)cm.v.srcObject.getTracks().forEach(t=>t.stop());cm.an&&cm.an.disconnect();cm.g.disconnect();cm.v.remove();
+cams.splice(cams.indexOf(cm),1);delete IT[cm.k];delete D[cm.k];delete byPid[cm.pid];if(src=='c:'+cm.id)src='blk';if(sel==cm.k)sel='score';render();fillSrc();chips();syncAudio()}
 function setStream(cm,s){cm.v.srcObject=s;cm.v.play().catch(()=>{});cm.an&&cm.an.disconnect();if(s.getAudioTracks().length){cm.an=ac.createMediaStreamSource(s);cm.an.connect(cm.g)}}
 $('#ac').onclick=()=>addCam(false);$('#lc').onclick=()=>addCam(true);
-function reco(cm){try{cm.call&&cm.call.close()}catch(e){}cm.call=null;try{cm.conn&&cm.conn.send({reco:1})}catch(e){}cm.vb=cm.ab=0;cm.sx=0;cm.ts=Date.now();say('🔁 طلبت إعادة اتصال كاملة من '+cm.name)}
-setInterval(()=>cams.forEach(async cm=>{if(cm.local||!cm.dg)return;
-const pc=cm.call&&cm.call.peerConnection;let vb=0,ab=0,fr=0,lost=0;
-if(pc){try{(await pc.getStats()).forEach(r=>{if(r.type=='inbound-rtp'){if(r.kind=='video'){vb=r.bytesReceived||0;fr=r.framesDecoded||0;lost+=r.packetsLost||0}else ab=r.bytesReceived||0}})}catch(e){}}
-const n=Date.now(),dt=(n-(cm.sx||n))/1000||2;cm.vk=cm.sx?Math.max(0,Math.round((vb-(cm.vb||0))*8/dt/1000)):0;cm.ak=cm.sx?Math.max(0,Math.round((ab-(cm.ab||0))*8/dt/1000)):0;
-cm.vb=vb;cm.ab=ab;cm.sx=n;cm.gotV=vb>0;
-cm.dg.textContent='الاتصال: '+(cm.conn?'✅':'❌')+' · ICE: '+(pc?pc.iceConnectionState:'—')+' · 🎥 '+(vb>0?'وصل':'لم يصل')+' '+cm.vk+' kbps · 🔊 '+(ab>0?'وصل':'لم يصل')+' '+cm.ak+' kbps · فريمات: '+fr+' · فقد: '+lost;
-cm.dot.textContent=cm.gotV&&cm.vk>0?'🟢':cm.gotV?'🟡':cm.conn?'🔴':'⚪';
-cm.er.hidden=!(cm.conn&&!cm.gotV&&n-cm.ts>5000)}),2000);
-setInterval(()=>cams.forEach(cm=>{const k=cm.v.readyState>=2&&cm.v.videoWidth>0;cm.nov.hidden=k;if(cm.v.srcObject&&cm.v.paused)cm.v.play().catch(()=>{});if(cm.local)cm.dot.textContent=k?'🟢':'🔴'}),700);
 setInterval(()=>cams.forEach(cm=>{if(cm.local){cm.nt.textContent='';return}
 let s='⚪ بانتظار الضيف';if(cm.conn){const a=Date.now()-cm.ts;s=a>9000?'⚪ منقطع':cm.lvl>=3?'🔴 صوت فقط':(cm.lvl==2||cm.loss>.15)?'🔴 ضعيفة':(cm.lvl==1||cm.loss>.05)?'🟡 متوسطة':'🟢 ممتازة'}cm.nt.textContent=s}),2000);
 $('#wk').onclick=e=>{weak=!weak;e.target.classList.toggle('on',weak);e.target.textContent='📶 وضع الشبكة الضعيفة: '+(weak?'تشغيل':'إيقاف');cams.forEach(cm=>{try{cm.conn&&cm.conn.send({force:weak?1:0})}catch(x){}})};
@@ -306,12 +289,10 @@ d.querySelector('a').href='https://wa.me/?text='+encodeURIComponent(l+' '+u);ret
 function ensureRoom(){return new Promise(res=>{
 if(peer)return res();if(noP()){say('تحتاج إنترنت لتحميل مكتبة الربط');return res()}
 ac.resume();getMic();room=Math.random().toString(36).slice(2,8);S.pw=$('#pw').value.trim()||String(1000+Math.random()*9000|0);$('#pw').value=S.pw;
-const base=location.href.split('#')[0];S.turn='';const tu=$('#tu').value.trim();
-if(tu){const o={urls:tu.split(',').map(x=>x.trim()),username:$('#tn').value.trim(),credential:$('#tc').value.trim()};CFG.config.iceServers.unshift(o);S.turn='&turn='+encodeURIComponent(btoa(JSON.stringify(o)))}
-peer=new Peer('st-'+room,CFG);
+const base=location.href.split('#')[0];peer=new Peer('st-'+room,CFG);
 peer.on('open',()=>{const L=$('#links');L.hidden=false;L.innerHTML='';
-L.append(lk('👁 رابط المشاهد (فيه الجرافيكس)',base+'#watch='+room+S.turn),lk('🎞 رابط الخام بدون جرافيكس (للصفحات: OBS أو أي مصدر متصفح)',base+'#watch='+room+'&raw=1'+S.turn));
-const u=encodeURIComponent(base+'#watch='+room+S.turn),T=encodeURIComponent('تعالوا شاهدوا البث المباشر 🔴'),x=document.createElement('div');x.className='lk';
+L.append(lk('👁 رابط المشاهد (فيه الجرافيكس)',base+'#watch='+room),lk('🎞 رابط الخام بدون جرافيكس (للصفحات: OBS أو أي مصدر متصفح)',base+'#watch='+room+'&raw=1'));
+const u=encodeURIComponent(base+'#watch='+room),T=encodeURIComponent('تعالوا شاهدوا البث المباشر 🔴'),x=document.createElement('div');x.className='lk';
 x.innerHTML='<a target="_blank" href="https://www.facebook.com/sharer/sharer.php?u='+u+'">فيسبوك</a><a target="_blank" href="https://t.me/share/url?url='+u+'&text='+T+'">تلغرام</a><a target="_blank" href="https://twitter.com/intent/tweet?url='+u+'&text='+T+'">X</a>';L.append(x);
 $('#lv').classList.add('on');say('الغرفة جاهزة. كلمة السر: '+S.pw);res()});
 peer.on('error',e=>{say('خطأ في الاتصال: '+e.type);if(!$('#lv').classList.contains('on')){peer=null;res()}});
@@ -321,13 +302,28 @@ if(m.r=='view'){all.push(c);nv++;peer.call(c.peer,m.raw?rawS:prog);c.on('close',
 if(m.pw!==S.pw){c.send({e:1});setTimeout(()=>c.close(),600);return}
 const cm=cams.find(x=>x.id==m.id&&!x.local);if(!cm){c.send({e:3});setTimeout(()=>c.close(),600);return}
 if(cm.conn&&cm.conn!==c){const o=cm.conn;cm.conn=null;try{o.close()}catch(e){}}
-delete byPid[cm.pid];cm.conn=c;cm.pid=c.peer;byPid[c.peer]=cm;cm.ts=Date.now();cm.lvl=0;cm.loss=0;cm.vb=cm.ab=0;cm.sx=0;all.push(c);
+cm.conn=c;cm.pid=c.peer;byPid[c.peer]=cm;cm.ts=Date.now();cm.lvl=0;cm.loss=0;cm.c0=Date.now();cm.vb=0;cm.pt=0;cm.call=null;all.push(c);
 c.send({ok:1,name:cm.name,force:weak?1:0});say('✅ اتصل: '+cm.name);
 c.on('data',d=>{if(d.r){cm.lvl=d.lvl;cm.loss=d.loss;cm.ts=Date.now()}});
 c.on('close',()=>{if(cm.conn===c)cm.conn=null})}));
-peer.on('call',c=>{const cm=byPid[c.peer];if(!cm)return c.close();cm.call=c;c.answer();c.on('stream',s=>setStream(cm,s));c.on('close',()=>{if(cm.call===c)cm.call=null})})})}
+peer.on('call',c=>{const cm=byPid[c.peer];if(!cm)return c.close();c.answer();cm.call=c;c.on('stream',s=>setStream(cm,s))})})}
 $('#mk').onclick=()=>ensureRoom();
 
+/* تشخيص الاستقبال */
+async function stats(cm){let vb=0,ab=0,fd=0,ice='';
+try{const r=await cm.call.peerConnection.getStats(),m={};r.forEach(x=>m[x.id]=x);
+r.forEach(x=>{if(x.type=='inbound-rtp'){if(x.kind=='video'){vb=x.bytesReceived||0;fd=x.framesDecoded||0}else ab=x.bytesReceived||0}
+if(x.type=='transport'&&x.selectedCandidatePairId){const q=m[x.selectedCandidatePairId],l=q&&m[q.localCandidateId];if(l)ice=l.candidateType}})}catch(e){}
+const n=Date.now();cm.kbps=cm.pt?Math.round((vb-cm.pv)*8/(n-cm.pt)):0;cm.pv=vb;cm.pt=n;cm.vb=vb;cm.ab=ab;cm.fd=fd;cm.ice=ice}
+setInterval(async()=>{const bad=[];
+for(const cm of cams){if(cm.local){if(cm.df)cm.df.textContent=cm.v.videoWidth?'✓ الكاميرا تعمل '+cm.v.videoWidth+'x'+cm.v.videoHeight:'✗ الكاميرا لا تعمل';continue}
+if(cm.call&&cm.call.peerConnection)await stats(cm);
+if(cm.df)cm.df.textContent=cm.conn?'فيديو: '+(cm.vb?'✓ '+cm.kbps+' kbps':'✗ لم يصل')+' | صوت: '+(cm.ab?'✓':'✗')+' | مسار: '+(cm.ice||'—')+' | إطارات: '+(cm.fd||0):'بانتظار دخول الضيف عبر الرابط';
+if(cm.conn&&!cm.vb&&Date.now()-cm.c0>5000)bad.push(cm)}
+const A=$('#alert');A.hidden=!bad.length;if(bad.length)A.innerHTML=bad.map(c=>'🔴 '+esc(c.name)+': الكاميرا لم تصل - اضغط إعادة الاتصال <button data-r="'+c.id+'">♻️ إعادة الاتصال</button>').join('<br>')},1000);
+$('#alert').onclick=e=>{const id=e.target.dataset.r;if(id)rejoin(cams.find(c=>c.id==id))};
+$('#bx1b').onclick=()=>{const c=cams.find(c=>c.local);if(c){c.fm=c.fm=='user'?'environment':'user';startLocal(c)}else addCam(true)};
+$('#bx2b').onclick=()=>{const c=cams.find(c=>!c.local);c?navigator.clipboard.writeText(link(c)).then(()=>say('تم نسخ رابط '+c.name)).catch(()=>say(link(c))):addCam(false)};
 /* نصوص وتحكم */
 setInterval(()=>{if(run)tm++;if(peer&&room)$('#lv').textContent='مباشر 👁 '+nv},1000);
 $('#sty').onclick=()=>{S.style=S.style%4+1;$('#sty').textContent='شكل النتيجة: '+S.style};
